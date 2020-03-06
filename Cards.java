@@ -3,8 +3,6 @@ import java.awt.*;
 
 import javax.swing.*;
 
-//Class DisplayCards extends the JFrame properties
-
 public class Cards extends JFrame
 
 {
@@ -13,7 +11,7 @@ public class Cards extends JFrame
      public Cards()
 
      {
-          //This function makes a display with 1 row, 3 columns, with 5 space each
+          //This function makes a display with 1 row, 3 columns, 5 spaces each
           setLayout(new GridLayout(1,3,5,5));
 
           //This function make a image icon for the cards.png
