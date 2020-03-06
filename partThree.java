@@ -1,111 +1,219 @@
-import javafx.scene.shape.Line;
+package question2;
+
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.input.MouseDragEvent;
+import java.awt.Point;
+import javafx.application.Application;
+import static javafx.application.Application.launch;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.Scene;
+import javafx.scene.shape.Line;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 
-public class partThree extends Application
-{
-    Pane pane = new Pane();
-    double width = 400;
-    double height = 400;
+public class partThree extends Application {
+  // UI components are defined
+
+    private Circle circle;
+    // main circle
+    private Circle p1, p2, p3;
+    // points on circle
+    private Line l1, l2, l3;
+    // points on line
+    private Text ang1Txt, ang2Txt, ang3Txt;
+    //angles
 
     @Override
-    public void start(Stage primaryStage)
-    {
 
-        Circle c = new Circle(width / 2, height / 2, 100);
-        pane.getChildren().add(c);
+    public void start(Stage primaryStage) {
 
-        c.setFill(Color.TRANSPARENT);
-        c.setStroke(Color.BLACK);
-        Circle[] p = new Circle[3];
-        Line[] lines = new Line[3];
-        Text[] texts = new Text[3];
-        for (int i = 0; i < p.length; i++)
-        {
+        // circle with radius 150
+        circle = new Circle(150);
 
-            texts[i] = new Text();
-            p[i] = new Circle(0, 0, 5);
-            setRandomLocation(p[i], c);
+        //setting centre of circle
+        circle.setCenterX(250);
+        circle.setCenterY(250);
+        circle.setFill(Color.TRANSPARENT);
 
-            // used in the lambda expression
-            final int index = i;
-            p[i].setOnMouseDragged(e ->
-            {
+        // outline is black
+        circle.setStroke(Color.BLACK);
 
-                double radian = Math.atan2(e.getY() - c.getCenterY(), e.getX() - c.getCenterX());
-                double x = c.getCenterX() + c.getRadius() * Math.cos(radian);
-                double y = c.getCenterY() + c.getRadius() * Math.sin(radian);
-                p[index].setCenterX(x);
-                p[index].setCenterY(y);
-                updateLines(lines, p, texts);
-            }
-            );
-        }
+        // 3 circles as points
+        point1 = new Circle(10);
+        p1.setFill(Color.RED);
+        p1.setStroke(Color.BLACK)
 
-        for (int i = 0; i < lines.length; i++)
-        {
-            int cIndex2 = (i + 1 >= p.length) ? 0 : i + 1;
-            lines[i] = new Line(
-                    p[i].getCenterX(), p[i].getCenterY(),
-                    p[cIndex2].getCenterX(), p[cIndex2].getCenterY());
-        }
+        //call movePoint method, passed point object and mouse event object
+        p1.setOnMouseDragged(e -> movePoint(p1, e));
+        p2 = new Circle(10);
+        p2.setFill(Color.RED);
+        p2.setStroke(Color.BLACK);
+        p2.setOnMouseDragged(e -> movePoint(p2, e));
+        p3 = new Circle(10);
+        p3.setFill(Color.RED);
+        p3.setStroke(Color.BLACK);
+        p3.setOnMouseDragged(e -> movePoint(p3, e));
 
-        updateLines(lines, p, texts);
+        //default points and angles are initialized
+        initialize();
 
-        pane.getChildren().addAll(lines);
-        pane.getChildren().addAll(texts);
-        pane.getChildren().addAll(p);
+        //view is updated
+        update();
 
-        primaryStage.setScene(new Scene(pane, width, height));
-        primaryStage.setTitle("Game: eye-hand coordination");
+        //pane is created
+        Pane root = new Pane(circle, l1, l2, l3, ang1Txt, ang2Txt, ang3Txt, p1, p2, p3);
+
+        // scene is displayed
+        Scene scene = new Scene(root, 500, 500);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("");
         primaryStage.show();
     }
 
-    private void updateLines(Line[] lines, Circle[] p, Text[] angles)
-    {
-        for (int i = 0; i < lines.length; i++)
-        {
+    // initialize default values
+    void initialize() {
 
-            int cIndex2 = (i + 1 >= p.length) ? 0 : i + 1;
-            lines[i].setStartX(p[i].getCenterX());
-            lines[i].setStartY(p[i].getCenterY());
-            lines[i].setEndX(p[cIndex2].getCenterX());
-            lines[i].setEndY(p[cIndex2].getCenterY());
-            angles[i].setX(p[i].getCenterX() + 5);
-            angles[i].setY(p[i].getCenterY() - 5);
+        // text for angles
+        ang1Txt = new Text();
+        ang2Txt = new Text();
+        ang3Txt = new Text();
+
+        //radius of circle
+        double centerX = circle.getCenterX();
+        double centerY = circle.getCenterY();
+        double radius = circle.getRadius();
+
+        // positioning points of angle
+        double angle = 0;
+
+        // x and y coordinates are found
+        double x = centerX + radius * Math.cos(Math.toRadians(angle));
+        double y = centerY + radius * Math.sin(Math.toRadians(angle));
+
+        p1.setCenterX(x);
+        p1.setCenterY(y);
+
+        // coordinates are found and angle is shown
+        x = centerX + (radius - 50) * Math.cos(Math.toRadians(angle));
+        y = centerY + (radius - 50) * Math.sin(Math.toRadians(angle));
+
+        ang1Txt.setLayoutX(x);
+        ang1Txt.setLayoutY(y);
+
+        angle = 90;
+
+        x = centerX + radius * Math.cos(Math.toRadians(angle));
+        y = centerY + radius * Math.sin(Math.toRadians(angle));
+
+        p2.setCenterX(x);
+        p2.setCenterY(y);
+
+        x = centerX + (radius - 50) * Math.cos(Math.toRadians(angle));
+        y = centerY + (radius - 50) * Math.sin(Math.toRadians(angle));
+
+        ang2Txt.setLayoutX(x);
+        ang2Txt.setLayoutY(y);
+
+        angle = 180;
+
+        x = centerX + radius * Math.cos(Math.toRadians(angle));
+        y = centerY + radius * Math.sin(Math.toRadians(angle));
+
+        p3.setCenterX(x);
+        p3.setCenterY(y);
+
+        x = centerX + (radius - 50) * Math.cos(Math.toRadians(angle));
+        y = centerY + (radius - 50) * Math.sin(Math.toRadians(angle));
+
+        ang3Txt.setLayoutX(x);
+        ang3Txt.setLayoutY(y);
+
+        // points are connected with lines
+        l1 = new Line(p1.getCenterX(), p1.getCenterY(), p2.getCenterX(), p2.getCenterY());
+        l2 = new Line(p2.getCenterX(), p2.getCenterY(), p3.getCenterX(), p3.getCenterY());
+        l3 = new Line(p3.getCenterX(), p3.getCenterY(), p1.getCenterX(), p1.getCenterY());
+    }
+
+    // points updated according to mouse movement
+    void movePoint(Circle point, MouseEvent event) {
+
+        // point's locations
+        double x1 = event.getX();
+        double x2 = circle.getCenterX();
+        double y1 = event.getY();
+        double y2 = circle.getCenterY();
+
+        //angles found
+        double angle = Math.atan2(y1 - y2, x1 - x2);
+        double newX = x2 + circle.getRadius() * Math.cos(angle);
+        double newY = y2 + circle.getRadius() * Math.sin(angle);
+
+        //point locations set to coordinates
+        point.setCenterX(newX);
+        point.setCenterY(newY);
+
+        //coordinates updated
+        newX = x2 + (circle.getRadius() - 50) * Math.cos(angle);
+        newY = y2 + (circle.getRadius() - 50) * Math.sin(angle);
+
+        if (point.equals(point1)) {
+            ang1Txt.setLayoutX(newX);
+            ang1Txt.setLayoutY(newY);
         }
 
-        double a = PaneCollection.distance(lines[0]);
-        double b = PaneCollection.distance(lines[1]);
-        double c = PaneCollection.distance(lines[2]);
+        else if (point.equals(point2)) {
+            ang2Txt.setLayoutX(newX);
+            ang2Txt.setLayoutY(newY);
+        }
 
-        double A = Math.toDegrees(Math.acos((a * a - b * b - c * c) / (-2 * b * c)));
-        angles[2].setText(String.format("%.2f 1", A));
+        else {
+            ang3Txt.setLayoutX(newX);
+            ang3Txt.setLayoutY(newY);
+        }
 
-        double B = Math.toDegrees(Math.acos((b * b - a * a - c * c) / (-2 * a * c)));
-        angles[0].setText(String.format("%.2f 2", B));
-
-        double C = Math.toDegrees(Math.acos((c * c - b * b - a * a) / (-2 * a * b)));
-        angles[1].setText(String.format("%.2f 3", C));
+        // view is updated
+        update();
     }
 
-    private void setRandomLocation(Circle tPoint, Circle c) {
+    // view is updated
+    void update() {
 
-        double angle = Math.random() * 360;
-        double x = c.getCenterX() + c.getRadius() * Math.cos(Math.toRadians(angle));
-        double y = c.getCenterY() + c.getRadius() * Math.sin(Math.toRadians(angle));
-        tPoint.setCenterX(x);
-        tPoint.setCenterY(y);
+        // lines are connected again
+        l1.setStartX(p1.getCenterX());
+        l1.setStartY(p1.getCenterY());
+        l1.setEndX(p2.getCenterX());
+        l1.setEndY(p2.getCenterY());
+        l2.setStartX(p2.getCenterX());
+        l2.setStartY(p2.getCenterY());
+        l2.setEndX(p3.getCenterX());
+        l2.setEndY(p3.getCenterY());
+        l3.setStartX(p3.getCenterX());
+        l3.setStartY(p3.getCenterY());
+        l3.setEndX(p1.getCenterX());
+        l3.setEndY(p1.getCenterY());
 
+        //f distance between 2 and 3 found
+        double a = Point.distance(p2.getCenterX(), p2.getCenterY(), p3.getCenterX(), p3.getCenterY());
+        // between 1 and 3
+        double b = Point.distance(p1.getCenterX(), p1.getCenterY(), p3.getCenterX(), p3.getCenterY());
+        // between 2 and 1
+        double c = Point.distance(p2.getCenterX(), p2.getCenterY(), p1.getCenterX(), p1.getCenterY());
+
+        // angles found using equation
+        double angle1 = Math.acos((a * a - b * b - c * c) / (-2 * b * c));
+        double angle2 = Math.acos((b * b - a * a - c * c) / (-2 * a * c));
+        double angle3 = Math.acos((c * c - b * b - a * a) / (-2 * a * b));
+
+        // text shown
+        ang1Txt.setText(String.format("%.1f", Math.toDegrees(angle1)));
+        ang2Txt.setText(String.format("%.1f", Math.toDegrees(angle2)));
+        ang3Txt.setText(String.format("%.1f", Math.toDegrees(angle3)));
     }
 
-    public static void main(String[] args)
-    {
-        Application.launch(args);
+    public static void main(String[] args) {
+        launch(args);
     }
+
 }
